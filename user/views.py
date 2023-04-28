@@ -21,6 +21,7 @@ class UserManageView(generics.RetrieveUpdateAPIView):
 
 
 class LogoutView(views.APIView):
+    """Logout view, get refresh_token argument and add refresh token to blacklist"""
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
