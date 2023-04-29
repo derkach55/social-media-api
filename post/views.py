@@ -6,9 +6,7 @@ from post.models import Post
 from user.models import User
 
 
-class PostViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
-                  mixins.UpdateModelMixin, mixins.RetrieveModelMixin,
-                  viewsets.GenericViewSet):
+class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     queryset = Post.objects.select_related('author')
     permission_classes = [permissions.IsAuthenticated]
@@ -20,7 +18,7 @@ class PostViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
 
     def get_queryset(self):
         queryset = self.queryset
-        if self.action == 'retrieve':
+        if self.action in ('retrieve', 'destroy'):
             queryset = queryset.filter(author=self.request.user)
         if self.action == 'list':
             queryset = queryset.filter(Q(author=self.request.user) |
