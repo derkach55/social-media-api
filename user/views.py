@@ -40,3 +40,11 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = self.queryset
+        email = self.request.query_params.get('email', None)
+        if email:
+            queryset = queryset.filter(email__icontains=email)
+
+        return queryset
