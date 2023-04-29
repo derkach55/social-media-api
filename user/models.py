@@ -60,3 +60,14 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+
+class UserFollowing(models.Model):
+    following = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
+    follower = models.ForeignKey(User, related_name='followings', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = [('following', 'follower')]
+
+    def __str__(self):
+        return f'{self.follower} follows {self.following}'
