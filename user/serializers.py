@@ -28,3 +28,19 @@ class UserFollowingSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserFollowing
         fields = ('following', 'follower')
+
+
+class UserFollowerListSerializer(serializers.ModelSerializer):
+    follower = UserSerializer()
+
+    class Meta:
+        model = UserFollowing
+        fields = ('follower', )
+
+
+class UserFollowingListSerializer(serializers.ModelSerializer):
+    following = UserSerializer()
+
+    class Meta:
+        model = UserFollowing
+        fields = ('following', )

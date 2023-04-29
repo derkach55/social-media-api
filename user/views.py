@@ -6,7 +6,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import action
 
 from user.models import User, UserFollowing
-from user.serializers import UserSerializer, UserFollowingSerializer
+from user.serializers import (
+    UserSerializer,
+    UserFollowingSerializer,
+    UserFollowingListSerializer,
+    UserFollowerListSerializer
+)
 
 
 class UserRegistryView(generics.CreateAPIView):
@@ -72,3 +77,17 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         except UserFollowing.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class FollowersListView(generics.ListAPIView):
+    serializer_class = UserFollowerListSerializer
+
+    def get_queryset(self):
+        return UserFollowing.objects.filter(following=self.request.user)
+
+
+class FollowingListView(generics.ListAPIView):
+    serializer_class = UserFollowingListSerializer
+
+    def get_queryset(self):
+        return UserFollowing.objects.filter(follower=self.request.user)
