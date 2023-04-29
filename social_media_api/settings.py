@@ -39,8 +39,16 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'post'
+    'post',
+    'drf_spectacular',
 ]
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Social Media API',
+    'DESCRIPTION': 'API Service for Social Media',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 AUTH_USER_MODEL = 'user.User'
 
@@ -57,7 +65,8 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 ROOT_URLCONF = 'social_media_api.urls'
