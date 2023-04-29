@@ -5,7 +5,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import action
 
-from user.models import User
+from user.models import User, UserFollowing
 from user.serializers import UserSerializer, UserFollowingSerializer
 
 
@@ -63,3 +63,12 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @action(methods=['get'], detail=True, url_path='unfollow', url_name='unfollow',
+            permission_classes=[IsAuthenticated])
+    def unfollow(self, request, pk=None):
+        """Action for unfollowing on user"""
+        try:
+            follow = UserFollowing.objects.get(following=self.get_object(), follower=self.request.user)
+        except UserFollowing.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_204_NO_CONTENT)
