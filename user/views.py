@@ -3,9 +3,10 @@ from rest_framework import generics, views, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.decorators import action
 
 from user.models import User
-from user.serializers import UserSerializer
+from user.serializers import UserSerializer, UserFollowingSerializer
 
 
 class UserRegistryView(generics.CreateAPIView):
@@ -48,3 +49,17 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(email__icontains=email)
 
         return queryset
+
+    @action(methods=['get'], detail=True, url_path='follow', url_name='follow',
+            permission_classes=[IsAuthenticated], serializer_class=UserFollowingSerializer)
+    def follow(self, request, pk=None):
+        """Action for following on user"""
+        data = {
+            'following': self.get_object().id,
+            'follower': self.request.user.id
+        }
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
