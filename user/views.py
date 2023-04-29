@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.response import Response
 from rest_framework import generics, views, status, viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -28,12 +29,18 @@ class UserManageView(generics.RetrieveUpdateAPIView):
 
 
 class LogoutView(views.APIView):
-    """Logout view, get refresh_token argument and add refresh token to blacklist"""
+    """Logout view, get refresh_token parameter and add refresh token to blacklist"""
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        responses={
+            205: None,
+            400: 'Bad Request',
+        }
+    )
     def post(self, request):
         try:
-            refresh_token = request.data["refresh_token"]
+            refresh_token = request.data['refresh_token']
             token = RefreshToken(refresh_token)
             token.blacklist()
 
@@ -54,6 +61,13 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(email__icontains=email)
 
         return queryset
+
+    @extend_schema(parameters=[
+        OpenApiParameter(name='email', type=str,
+                         description='Filtering users by email, ex. ?email=bob')
+    ])
+    def list(self, request, *args, **kwargs):
+        return super(UserViewSet, self).list(request, *args, **kwargs)
 
     @action(methods=['get'], detail=True, url_path='follow', url_name='follow',
             permission_classes=[IsAuthenticated], serializer_class=UserFollowingSerializer)

@@ -1,4 +1,5 @@
 from django.db.models import Q
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, permissions, mixins
 
 from post.serializer import PostSerializer, PostListSerializer, PostCreateSerializer
@@ -28,6 +29,13 @@ class PostViewSet(viewsets.ModelViewSet):
             ids = self._params_to_ints(ids)
             queryset = queryset.filter(author_id__in=ids)
         return queryset
+
+    @extend_schema(parameters=[
+        OpenApiParameter(name='ids', type={'type': 'array', 'items': {'type': 'int'}},
+                         description='Filtering users by user`s id, ex. ?id=1,2,3')
+    ])
+    def list(self, request, *args, **kwargs):
+        return super(PostViewSet, self).list(request, *args, **kwargs)
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
