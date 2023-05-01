@@ -88,6 +88,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         """Action for unfollowing on user"""
         try:
             follow = UserFollowing.objects.get(following=self.get_object(), follower=self.request.user)
+            follow.delete()
         except UserFollowing.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
